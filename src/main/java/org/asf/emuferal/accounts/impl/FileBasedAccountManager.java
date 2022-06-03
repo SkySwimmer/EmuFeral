@@ -141,6 +141,10 @@ public class FileBasedAccountManager extends AccountManager {
 					}
 				}
 			} catch (IOException e) {
+				try {
+					Thread.sleep(8000);
+				} catch (InterruptedException e2) {
+				}
 				return null;
 			}
 		}
@@ -267,11 +271,45 @@ public class FileBasedAccountManager extends AccountManager {
 	}
 
 	@Override
+	public String getUserByLoginName(String loginName) {
+		// Check name validity
+		if (!loginName.matches("^[A-Za-z0-9@._#]+$") || loginName.contains(".cred")
+				|| !loginName.matches(".*[A-Za-z0-9]+.*") || loginName.isBlank())
+			return null;
+
+		// Find the account
+		if (!new File("accounts").exists())
+			new File("accounts").mkdirs();
+		File uf = new File("accounts/" + loginName);
+		if (uf.exists()) {
+			try {
+				String userID = Files.readAllLines(uf.toPath()).get(0);
+
+				// Check existence
+				if (new File("accounts/" + userID).exists())
+					return userID; // Account found
+			} catch (IOException e) {
+			}
+		}
+
+		// Account not found
+		return null;
+	}
+
+	@Override
 	public String getUserByDisplayName(String displayName) {
+		// Check validity
+		if (!displayName.matches("^[0-9A-Za-z\\-_. ]+") || displayName.length() > 16 || displayName.length() < 2)
+			return null;
+
 		// Find file
 		if (new File("displaynames/" + displayName).exists()) {
 			try {
-				return Files.readAllLines(Path.of("displaynames/" + displayName)).get(0);
+				String userID = Files.readAllLines(Path.of("displaynames/" + displayName)).get(0);
+
+				// Check existence
+				if (new File("accounts/" + userID).exists())
+					return userID; // Account found
 			} catch (IOException e) {
 			}
 		}
@@ -281,7 +319,11 @@ public class FileBasedAccountManager extends AccountManager {
 			for (File dsp : new File("displaynames").listFiles(t -> !t.isDirectory())) {
 				if (dsp.getName().equalsIgnoreCase(displayName))
 					try {
-						return Files.readAllLines(dsp.toPath()).get(0);
+						String userID = Files.readAllLines(dsp.toPath()).get(0);
+
+						// Check existence
+						if (new File("accounts/" + userID).exists())
+							return userID; // Account found
 					} catch (IOException e) {
 					}
 			}

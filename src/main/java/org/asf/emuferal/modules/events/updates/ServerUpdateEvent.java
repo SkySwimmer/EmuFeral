@@ -62,5 +62,5 @@ public class ServerUpdateEvent extends EventObject {
 	public int getTimeRemaining() {
 		return minutes;
 	}
-
+	
 }
