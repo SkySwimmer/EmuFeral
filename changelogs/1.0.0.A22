@@ -13,4 +13,5 @@ Changes in EmuFeral 1.0.0.A22:
  - Fix oversight in chat server security
  - Fix help command output
  - Implement a listplayers command
+ - Implement a getaccountid command
  - Fix connection crash when searching for invalid players

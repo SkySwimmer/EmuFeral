@@ -274,6 +274,8 @@ public class SendMessage extends AbstractChatPacket {
 
 		// Generate the command list
 		ArrayList<String> commandMessages = new ArrayList<String>();
+		commandMessages.add("recolour ");
+		
 		if (GameServer.hasPerm(permLevel, "moderator")) {
 			commandMessages.add("kick \"<player>\"");
 			commandMessages.add("ipban \"<player/address>\"");
@@ -286,6 +288,7 @@ public class SendMessage extends AbstractChatPacket {
 			commandMessages.add("pardon \"<player>\"");
 			if (GameServer.hasPerm(permLevel, "developer")) {
 				commandMessages.add("makedeveloper \"<name>\"");
+				commandMessages.add("getaccountid (optional: \"name>\")");
 			}
 			if (GameServer.hasPerm(permLevel, "admin")) {
 				commandMessages.add("makeadmin \"<player>\"");
@@ -1216,6 +1219,40 @@ public class SendMessage extends AbstractChatPacket {
 								}
 							}
 
+							return true;
+						} else {
+							break;
+						}
+					}
+					case "getaccountid":
+					{
+						// Gets a players account ID.
+						if (GameServer.hasPerm(permLevel, "admin")) {
+							if (args.size() < 1) {
+								//just get your own acc id
+								
+								systemMessage("Your Account ID: " + client.getPlayer().getAccountID(), cmd, client);
+								
+								return true;
+							}
+							else
+							{
+								var playerName = args.get(0);
+
+								for (Player plr : EmuFeral.gameServer.getPlayers()) {
+									if (plr.account.getDisplayName().toLowerCase() == playerName) {
+										try {
+											systemMessage("Your Account ID: " + client.getPlayer().getAccountID(), cmd, client);
+										} catch (Exception e) {
+											// TODO Auto-generated catch block
+											systemMessage("Error: " + e.getMessage(), cmd, client);
+										}
+										break;
+									}
+								}
+								
+								systemMessage("No player was found with that display name.", cmd, client);
+							}
 							return true;
 						} else {
 							break;
