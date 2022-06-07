@@ -1,6 +1,7 @@
 plugins {
     id 'java'
 	id 'maven-publish'
+	id "org.liquibase.gradle" version "2.1.1"
 }
 
 version = "1.0.0.A22"
@@ -84,7 +85,10 @@ dependencies {
 	implementation group: 'org.apache.commons', name: 'commons-compress', version: '1.21'	
 	implementation group: 'org.tukaani', name: 'xz', version: '1.9'
 	implementation group: 'org.joml', name: 'joml', version: '1.10.4'
+	
+	implementation 'org.hibernate.orm:hibernate-core:6.0.2.Final'
 }
+
 
 project.configurations.implementation.canBeResolved = true
 
