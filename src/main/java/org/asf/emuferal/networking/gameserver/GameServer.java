@@ -68,6 +68,7 @@ import org.asf.emuferal.packets.xt.gameserver.world.JoinRoom;
 import org.asf.emuferal.packets.xt.gameserver.world.RoomJoinTutorial;
 import org.asf.emuferal.packets.xt.gameserver.world.RoomJoinPrevious;
 import org.asf.emuferal.packets.xt.gameserver.minigames.MinigameJoin;
+import org.asf.emuferal.packets.xt.gameserver.minigames.MinigameMessage;
 import org.asf.emuferal.packets.xt.gameserver.world.WorldReadyPacket;
 import org.asf.emuferal.players.Player;
 import org.asf.emuferal.security.AddressChecker;
@@ -123,6 +124,7 @@ public class GameServer extends BaseSmartfoxServer {
 		registerPacket(new RoomJoinPrevious());
 		registerPacket(new RoomJoinTutorial());
 		registerPacket(new MinigameJoin());
+		registerPacket(new MinigameMessage());
 		registerPacket(new ShopList());
 		registerPacket(new ShopItemBuy());
 		registerPacket(new ItemUncraftPacket());

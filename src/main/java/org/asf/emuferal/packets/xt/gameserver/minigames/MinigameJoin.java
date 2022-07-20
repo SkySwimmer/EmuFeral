@@ -12,7 +12,9 @@ import org.asf.emuferal.packets.xt.gameserver.world.JoinRoom;
 public class MinigameJoin implements IXtPacket<MinigameJoin> {
 
 	private static final String PACKET_ID = "mj";
+	
     public int MinigameID;
+	private boolean isMinigameSupported = false;
 	
 	@Override
 	public MinigameJoin instantiate() {
@@ -35,28 +37,36 @@ public class MinigameJoin implements IXtPacket<MinigameJoin> {
 
 	@Override
 	public boolean handle(SmartfoxClient client) throws IOException {
-		// Make the client load the tutorial
+		
 		Player plr = (Player) client.container;
-
-		//Set previous
-        plr.previousLevelID = plr.levelID;
-        plr.previousLevelType = plr.levelType;
-        
-        // Assign room
-		plr.roomReady = false;
-		plr.pendingLevelID = MinigameID;
-		plr.pendingRoom = "room_" + MinigameID;
-		plr.levelType = 1;
+		
+		//This would be better done with an enum or array
+		if (MinigameID == 4111) //Twiggle Builders
+		{isMinigameSupported = true;}
+		
+		if (isMinigameSupported == true){		
+			//Set previous
+			plr.previousLevelID = plr.levelID;
+			plr.previousLevelType = plr.levelType;
+			
+			// Assign room
+			plr.roomReady = false;
+			plr.pendingLevelID = MinigameID;
+			plr.pendingRoom = "room_" + MinigameID;
+			plr.levelType = 1;
+		}
+		
 
 		// Send response
 		JoinRoom join = new JoinRoom();
+		join.success = isMinigameSupported;
 		join.levelType = plr.levelType;
 		join.levelID = plr.pendingLevelID;
 		client.sendPacket(join);
 
 		// Log
 		if (System.getProperty("debugMode") != null) {
-			System.out.println("[JOINROOM]  Client to server (room: " + plr.pendingRoom + ", level: " + plr.pendingLevelID + ")");
+			System.out.println("[MINIGAME] [JOIN]  Client to server (MinigameID: " + MinigameID + ")");
 		}
 
 		return true;
