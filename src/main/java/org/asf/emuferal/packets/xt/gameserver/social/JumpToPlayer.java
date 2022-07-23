@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.asf.emuferal.data.XtReader;
 import org.asf.emuferal.data.XtWriter;
+import org.asf.emuferal.entities.generic.Quaternion;
+import org.asf.emuferal.entities.generic.Vector3;
 import org.asf.emuferal.entities.uservars.UserVarValue;
 import org.asf.emuferal.networking.gameserver.GameServer;
 import org.asf.emuferal.networking.smartfox.SmartfoxClient;
@@ -14,6 +16,8 @@ import org.asf.emuferal.social.SocialManager;
 
 public class JumpToPlayer implements IXtPacket<JumpToPlayer> {
 
+	private static final String PACKET_ID = "rfjtr";
+
 	private String accountID;
 
 	@Override
@@ -23,7 +27,7 @@ public class JumpToPlayer implements IXtPacket<JumpToPlayer> {
 
 	@Override
 	public String id() {
-		return "rfjtr";
+		return PACKET_ID;
 	}
 
 	@Override
@@ -72,6 +76,8 @@ public class JumpToPlayer implements IXtPacket<JumpToPlayer> {
 					join.levelID = plr.levelID;
 					join.roomIdentifier = "room_" + join.levelID;
 					player.teleportDestination = plr.account.getAccountID();
+					player.targetPos = new Vector3(plr.lastPosX, plr.lastPosY, plr.lastPosZ);
+					player.targetRot = new Quaternion(plr.lastRotX, plr.lastRotY, plr.lastRotZ, plr.lastRotW);
 
 					// Sync
 					GameServer srv = (GameServer) client.getServer();

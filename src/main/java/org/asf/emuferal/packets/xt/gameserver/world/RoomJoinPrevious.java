@@ -8,13 +8,13 @@ import org.asf.emuferal.networking.smartfox.SmartfoxClient;
 import org.asf.emuferal.packets.xt.IXtPacket;
 import org.asf.emuferal.players.Player;
 
-public class RoomJoinTutorial implements IXtPacket<RoomJoinTutorial> {
+public class RoomJoinPrevious implements IXtPacket<RoomJoinPrevious> {
 
-	private static final String PACKET_ID = "rjt";
+	private static final String PACKET_ID = "rjp";
 	
 	@Override
-	public RoomJoinTutorial instantiate() {
-		return new RoomJoinTutorial();
+	public RoomJoinPrevious instantiate() {
+		return new RoomJoinPrevious();
 	}
 
 	@Override
@@ -34,12 +34,12 @@ public class RoomJoinTutorial implements IXtPacket<RoomJoinTutorial> {
 	public boolean handle(SmartfoxClient client) throws IOException {
 		// Make the client load the tutorial
 		Player plr = (Player) client.container;
-
-		// Assign room
+        
+        // Assign room
 		plr.roomReady = false;
-		plr.pendingLevelID = 25280;
-		plr.pendingRoom = "room_25280";
-		plr.levelType = 4;
+		plr.pendingLevelID = plr.previousLevelID;
+		plr.pendingRoom = "room_" + plr.previousLevelID;
+		plr.levelType = plr.previousLevelType;
 
 		// Send response
 		JoinRoom join = new JoinRoom();
@@ -56,3 +56,4 @@ public class RoomJoinTutorial implements IXtPacket<RoomJoinTutorial> {
 	}
 
 }
+

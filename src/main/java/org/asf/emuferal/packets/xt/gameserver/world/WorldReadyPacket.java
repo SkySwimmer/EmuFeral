@@ -31,6 +31,8 @@ import com.google.gson.JsonParser;
 
 public class WorldReadyPacket implements IXtPacket<WorldReadyPacket> {
 
+	private static final String PACKET_ID = "wr";
+
 	public String teleportUUID = "";
 
 	@Override
@@ -40,7 +42,7 @@ public class WorldReadyPacket implements IXtPacket<WorldReadyPacket> {
 
 	@Override
 	public String id() {
-		return "wr";
+		return PACKET_ID;
 	}
 
 	@Override
@@ -130,6 +132,10 @@ public class WorldReadyPacket implements IXtPacket<WorldReadyPacket> {
 
 		// Find spawn
 		handleSpawn(teleportUUID, plr, client);
+
+		// Reset target
+		plr.targetPos = null;
+		plr.targetRot = null;
 
 		// Sync spawn
 		for (Player player : server.getPlayers()) {
@@ -273,6 +279,12 @@ public class WorldReadyPacket implements IXtPacket<WorldReadyPacket> {
 				// Send response
 				System.out.println(
 						"Player teleport: " + plr.account.getDisplayName() + ": " + player.account.getDisplayName());
+
+				// Check room
+				if (player.levelID != plr.pendingLevelID) {
+					continue;
+				}
+
 				WorldObjectInfoAvatarLocal res = new WorldObjectInfoAvatarLocal();
 				res.x = player.lastPosX;
 				res.y = player.lastPosY;
@@ -295,6 +307,28 @@ public class WorldReadyPacket implements IXtPacket<WorldReadyPacket> {
 			}
 		}
 
+		// Spawn at target if present
+		if (plr.targetPos != null && plr.targetRot != null) {
+			WorldObjectInfoAvatarLocal res = new WorldObjectInfoAvatarLocal();
+			res.x = plr.targetPos.x;
+			res.y = plr.targetPos.y;
+			res.z = plr.targetPos.z;
+			res.rw = plr.targetRot.w;
+			res.rx = plr.targetRot.x;
+			res.ry = plr.targetRot.y;
+			res.rz = plr.targetRot.z;
+			plr.lastPosX = res.x;
+			plr.lastPosY = res.y;
+			plr.lastPosZ = res.z;
+			plr.lastRotW = res.rx;
+			plr.lastRotX = res.ry;
+			plr.lastRotY = res.rz;
+			plr.lastRotZ = res.rw;
+			client.sendPacket(res);
+			plr.respawn = res.x + "%" + res.y + "%" + res.z + "%" + res.rx + "%" + res.ry + "%" + res.rz + "%" + res.rw;
+			return;
+		}
+
 		// Load spawn helper
 		try {
 			// Load helper
@@ -309,6 +343,7 @@ public class WorldReadyPacket implements IXtPacket<WorldReadyPacket> {
 				helper = helper.get(plr.pendingLevelID + "/" + id).getAsJsonObject();
 				System.out.println("Player teleport: " + plr.account.getDisplayName() + ": "
 						+ helper.get("worldID").getAsString());
+
 				WorldObjectInfoAvatarLocal res = new WorldObjectInfoAvatarLocal();
 				res.x = helper.get("spawnX").getAsDouble();
 				res.y = helper.get("spawnY").getAsDouble();

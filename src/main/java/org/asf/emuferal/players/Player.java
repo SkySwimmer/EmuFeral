@@ -3,6 +3,8 @@ package org.asf.emuferal.players;
 import java.util.HashMap;
 
 import org.asf.emuferal.accounts.EmuFeralAccount;
+import org.asf.emuferal.entities.generic.Quaternion;
+import org.asf.emuferal.entities.generic.Vector3;
 import org.asf.emuferal.entities.generic.Velocity;
 import org.asf.emuferal.entities.objects.WorldObjectMoveNodeData;
 import org.asf.emuferal.entities.objects.WorldObjectPositionInfo;
@@ -33,8 +35,10 @@ public class Player {
 	public boolean roomReady = false;
 	public boolean wasInChat = false;
 	public int levelType = 0;
+	public int previousLevelType = 0;
 	public int levelID = 0;
 	public int pendingLevelID = 0;
+	public int previousLevelID = 0;
 
 	public String pendingRoom = "0";
 	public String room = null;
@@ -54,7 +58,11 @@ public class Player {
 	public double lastRotZ = 0;
 
 	public int lastAction = 0;
+	
+	// Teleports
 	public String teleportDestination;
+	public Vector3 targetPos;
+	public Quaternion targetRot;
 
 	public void destroyAt(Player player) {
 		// Delete character

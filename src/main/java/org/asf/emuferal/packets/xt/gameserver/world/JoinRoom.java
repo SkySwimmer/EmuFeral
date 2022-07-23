@@ -11,10 +11,14 @@ import org.asf.emuferal.players.Player;
 
 public class JoinRoom implements IXtPacket<JoinRoom> {
 
+	private static final String PACKET_ID = "rj";
+
 	public int levelID = 0;
 	public int levelType = 0;
+	public int issRoomID = -1;
 	public String roomIdentifier = "room_0";
 	public String teleport = "";
+	public boolean success = true;
 
 	@Override
 	public JoinRoom instantiate() {
@@ -23,7 +27,7 @@ public class JoinRoom implements IXtPacket<JoinRoom> {
 
 	@Override
 	public String id() {
-		return "rj";
+		return PACKET_ID;
 	}
 
 	@Override
@@ -34,12 +38,12 @@ public class JoinRoom implements IXtPacket<JoinRoom> {
 
 	@Override
 	public void build(XtWriter writer) throws IOException {
-		writer.writeInt(-1); // Data prefix
+		writer.writeInt(issRoomID); // Iss Room ID (unused as we dont support it)
 
-		writer.writeBoolean(true); // Success
+		writer.writeBoolean(success); // Success
 		writer.writeInt(levelID); // Room ID
 		writer.writeInt(levelType); // Room type
-		writer.writeInt(-1); // Iss Room ID (unused as we dont support it)
+		writer.writeInt(issRoomID); // Iss Room ID (unused as we dont support it)
 		writer.writeString(teleport); // Specific teleport
 		writer.writeString(roomIdentifier); // Chat room ID
 
