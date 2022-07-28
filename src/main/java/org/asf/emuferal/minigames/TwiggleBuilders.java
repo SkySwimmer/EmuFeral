@@ -3,15 +3,18 @@ package org.asf.emuferal.minigames;
 import org.asf.emuferal.data.XtReader;
 import org.asf.emuferal.data.XtWriter;
 import org.asf.emuferal.players.Player;
+import org.asf.emuferal.packets.xt.gameserver.minigames.MinigameCurrency;
 import org.asf.emuferal.packets.xt.gameserver.minigames.MinigamePrize;;
 
 public class TwiggleBuilders {
     
     public static void OnJoin(Player plr){
-       
+       MinigameCurrency currency = new MinigameCurrency();
+       currency.Currency = 9514;
+       plr.client.sendPacket(currency);
     }
     
-    public static void HandleMessage(Player plr, String command, String data){
+    public static boolean HandleMessage(Player plr, String command, String data){
         XtReader rd = new XtReader(data);
 		XtWriter pk = new XtWriter();
         pk.writeString("mm");
@@ -31,11 +34,16 @@ public class TwiggleBuilders {
                 pk.writeInt(30);
                 break;
             }
+            default: {
+                return true;
+            }
         }
 
         pk.writeString(""); // Data suffix
         String msg = pk.encode();
         plr.client.sendPacket(msg);
+
+        return true;
     }
 
     public static void GivePrize(Player plr){

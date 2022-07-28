@@ -78,6 +78,9 @@ public class MinigameJoin implements IXtPacket<MinigameJoin> {
 		join.levelID = MinigameID;
 		client.sendPacket(join);
 
+		MinigameStart start = new MinigameStart();
+		client.sendPacket(start);
+
 		return true;
 	}
 
