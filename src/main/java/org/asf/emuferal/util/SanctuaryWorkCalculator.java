@@ -211,7 +211,7 @@ public class SanctuaryWorkCalculator {
 		enlargenIndexToItemCostsMap.put(8, costs);
 		
 		//Tenth room enlargen = 259200 seconds
-		enlargenIndexToTimeAmountMap.put(9, 172800l * 1000l);
+		enlargenIndexToTimeAmountMap.put(9, 259200l * 1000l);
 		
 		costs = new HashMap<Integer, Integer>();
 		costs.put(8193, 259200);
