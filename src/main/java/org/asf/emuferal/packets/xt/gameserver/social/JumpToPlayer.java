@@ -12,7 +12,11 @@ public class JumpToPlayer implements IXtPacket<JumpToPlayer> {
 
 	private static final String PACKET_ID = "rfjtr";
 
-	private String accountID;
+	public String accountID;
+	
+	public boolean success;
+	public int roomIssId = -1;
+	public String otherNode = "";
 
 	@Override
 	public JumpToPlayer instantiate() {
@@ -31,6 +35,13 @@ public class JumpToPlayer implements IXtPacket<JumpToPlayer> {
 
 	@Override
 	public void build(XtWriter writer) throws IOException {
+		writer.writeInt(-1); // data prefix
+		
+		writer.writeBoolean(success); // success
+		writer.writeInt(roomIssId); //roomIssId
+		writer.writeString(otherNode); //other node?
+		
+		writer.writeString(""); // data suffix
 	}
 
 	@Override

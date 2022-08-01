@@ -18,6 +18,7 @@ import org.asf.emuferal.networking.gameserver.GameServer;
 import org.asf.emuferal.networking.smartfox.SmartfoxClient;
 import org.asf.emuferal.packets.xt.gameserver.objects.WorldObjectDelete;
 import org.asf.emuferal.packets.xt.gameserver.players.PlayerWorldObjectInfo;
+import org.asf.emuferal.packets.xt.gameserver.social.JumpToPlayer;
 import org.asf.emuferal.packets.xt.gameserver.world.JoinRoom;
 import org.asf.emuferal.social.SocialManager;
 
@@ -193,6 +194,7 @@ public class Player {
 				player.pendingRoom = "sanctuary_" + sanctuaryOwner;
 				player.levelType = join.levelType;
 			} else {
+				client.sendPacket(join);
 				return false;
 			}
 
@@ -202,6 +204,7 @@ public class Player {
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
+			client.sendPacket(new JoinRoom().markAsFailed());
 			return false;
 		}
 	}
@@ -284,6 +287,7 @@ public class Player {
 				player.targetRot = new Quaternion(targetedPlayer.lastRotX, targetedPlayer.lastRotY,
 						targetedPlayer.lastRotZ, targetedPlayer.lastRotW);
 			} else {
+				client.sendPacket(join);
 				return false;
 			}
 
@@ -293,6 +297,7 @@ public class Player {
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
+			client.sendPacket(new JoinRoom().markAsFailed());
 			return false;
 		}
 
@@ -475,38 +480,47 @@ public class Player {
 					else if (privSetting == 2)
 						break;
 
-					XtWriter writer = new XtWriter();
-					writer.writeString("rfjtr");
-					writer.writeInt(-1); // data prefix
-					writer.writeInt(1); // other world
-					writer.writeString("");
-					writer.writeString(""); // data suffix
-					client.sendPacket(writer.encode());
-
+					boolean success = true;
 					if (!plr.room.equals(player.room)) {
 						// Build room join
 
 						if (plr.room.contains("sanctuary")) {
 							// how can I get the sanctuary owner...
-							String ownerId = plr.room.substring(plr.room.indexOf('_'));
-							player.teleportToSanctuary(ownerId, plr);
+							String ownerId = plr.room.substring(plr.room.indexOf('_') + 1);
+							success = player.teleportToSanctuary(ownerId, plr);
 						} else {
-							player.teleportToRoom(plr.levelID, plr.levelType, -1, "room_" + plr.levelID, "", plr);
+							success = player.teleportToRoom(plr.levelID, plr.levelType, -1, "room_" + plr.levelID, "", plr);
 						}
+						
+						var jumpToPlayerResponse = new JumpToPlayer();
+						jumpToPlayerResponse.success = success;
+						client.sendPacket(jumpToPlayerResponse);
+						return true;
 					}
-					return true;
+					else
+					{
+						//TODO: This is weird.
+						XtWriter writer = new XtWriter();
+						writer.writeString("rfjtr");
+						writer.writeInt(-1); // data prefix
+						writer.writeInt(1); // other world
+						writer.writeString("");
+						writer.writeString(""); // data suffix
+						client.sendPacket(writer.encode());
+						return true;
+					}
 				}
 			}
 
-			XtWriter writer = new XtWriter();
-			writer.writeString("rfjtr");
-			writer.writeInt(-1); // data prefix
-			writer.writeInt(0); // failure
-			writer.writeString(""); // data suffix
-			client.sendPacket(writer.encode());
+			var jumpToPlayerResponse = new JumpToPlayer();
+			jumpToPlayerResponse.success = false;
+			client.sendPacket(jumpToPlayerResponse);
 			return false;
 		} catch (Exception e) {
 			e.printStackTrace();
+			var jumpToPlayerResponse = new JumpToPlayer();
+			jumpToPlayerResponse.success = false;
+			client.sendPacket(jumpToPlayerResponse);
 			return false;
 		}
 
